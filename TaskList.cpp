@@ -104,10 +104,27 @@ void TaskList::deleteTask(float aTimeStamp)
   }
 }
 
+bool TaskList::atPoint(TaskListNode* curr, float aTimeStamp) {
+  if (mOrder == TaskList::ASCENDING) {
+    return curr->timeStamp() <= aTimeStamp;
+  } else {
+    return curr->timeStamp() >= aTimeStamp;
+  }
+}; 
+
 // Insert a new task at an appropriate position
 void TaskList::insertTask(float aTimeStamp, std::string aTaskTitle)
 {
-   // Your implementation goes here
+  // Store prev value
+  TaskListNode * prev;
+  TaskListNode * curr = mHead;
+
+  while(!atPoint(curr, aTimeStamp)) {
+    prev = curr;
+    curr = curr->next();
+  }
+  curr = new TaskListNode(aTimeStamp, aTaskTitle, curr);
+  prev->setNext(curr);
 }
 
 // Output the task list
@@ -149,7 +166,16 @@ void TaskList::output(std::ostream& s) const
 // Delete all
 void TaskList::removeAll()
 {
-   // Your implementation goes here
+  if (mHead == nullptr) return;
+
+  TaskListNode * curr = mHead;
+  TaskListNode * next;
+    while(curr != nullptr) {
+    next = curr->next();
+    delete curr;
+    curr = next;
+  }
+  mHead = nullptr;
 }
 
 // Destructor
@@ -161,40 +187,61 @@ TaskList::~TaskList()
 // Reverse the list
 void TaskList::reverse()
 {
-  TaskListNode * head = mHead;
-  int count = 0;
-  recursiveReverse(head, count);
-  mOrder = TaskList::DESCENDING;  
-}
+  if (mOrder == TaskList::DESCENDING) {
+    mOrder = TaskList::ASCENDING;
+   } else {
+    mOrder = TaskList::DESCENDING;
+   }  
+  if (mHead == nullptr) return;
 
-void TaskList::recursiveReverse(TaskListNode* head_ref, int c) {
-  TaskListNode * temp;
-  if (head_ref == nullptr) {
-    cout << "head nullptr, returning" << c << endl;
-    return;
+  TaskListNode * prev;
+  TaskListNode * curr = mHead;
+  TaskListNode * next;
+
+  while(curr != nullptr) {
+    next = curr->next();
+    curr->setNext(prev);
+    prev = curr;
+    curr = next;
   }
-  // divide list into 2 parts
-  TaskListNode* first = head_ref;
-  TaskListNode* rest = (head_ref)->next();
-  c += 1;
-  if (rest == nullptr) {
-    return;
-  }  
-
-  // reverse the rest of the list and put 1st elem at end
-  recursiveReverse(rest, c);
-  cout << "count: " << c << endl;
-  cout << "rest: " << rest->timeStamp() << endl; 
-  cout << "first: " << first->timeStamp() << endl;
-  // make new first (old last) and link to last in reversed rest.
-  TaskListNode * cur = first->next();
-  cur->setNext(first);
-  first->setNext(nullptr);
- 
-  // rest always points to the last
-  head_ref = rest;
-  cout << "header " << (rest->timeStamp()) << endl;
+  mHead->setNext(nullptr);
+  mHead = prev;
 }
+
+// For sure a bit broken. Was hoping i was 
+// on the right track but spent a bit too long
+// void TaskList::recursiveReverse(TaskListNode* head_ref, int c) {
+//   TaskListNode * revList;
+//   TaskListNode * curTask;
+//   if (head_ref == nullptr) return;
+
+//   TaskListNode* first = head_ref; // 2 parts. first
+//   TaskListNode* rest = first->next(); // and rest
+//   c += 1;
+//   if (rest == nullptr) { // reached end of list
+//     float ts = first->timeStamp();
+//     string tt = first->taskTitle();
+//     revList = new TaskListNode(ts, tt, nullptr);
+//     mHead = revList;
+//     return;
+//   }  
+
+//   recursiveReverse(rest, c);
+//   curTask = first;
+//   float ts = curTask->timeStamp();
+//   string tt = curTask->taskTitle();
+  
+//   if (first->next() == nullptr) {
+//     revList->setNext(nullptr);
+//     return;
+//   } else {
+//     addTask(ts, tt);
+//     revList = revList->next();
+//     delete first;
+//   }
+
+//   head_ref = rest;
+// }
 
 std::ostream& operator<<(std::ostream& s, const TaskList& aTaskList)
 {

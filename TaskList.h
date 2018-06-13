@@ -71,6 +71,8 @@ class TaskList {
   // Reverse the list
   void reverse();
 
+  bool atPoint(TaskListNode* curr, float aTimeStamp);
+
  private:
   TaskListNode* mHead;
   TaskList::Order mOrder;
