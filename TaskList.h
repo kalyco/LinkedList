@@ -44,7 +44,7 @@ class TaskList {
   TaskList(TaskList::Order aOrder);
   ~TaskList();
 
-  void recursiveReverse(TaskListNode* list, int c);
+  void recursiveReverse(TaskListNode*);
 
   // Check if empty
   bool isEmpty() const;

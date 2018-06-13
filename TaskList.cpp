@@ -194,54 +194,22 @@ void TaskList::reverse()
    }  
   if (mHead == nullptr) return;
 
-  TaskListNode * prev;
-  TaskListNode * curr = mHead;
-  TaskListNode * next;
-
-  while(curr != nullptr) {
-    next = curr->next();
-    curr->setNext(prev);
-    prev = curr;
-    curr = next;
-  }
-  mHead->setNext(nullptr);
-  mHead = prev;
+  recursiveReverse(mHead);
 }
 
-// For sure a bit broken. Was hoping i was 
-// on the right track but spent a bit too long
-// void TaskList::recursiveReverse(TaskListNode* head_ref, int c) {
-//   TaskListNode * revList;
-//   TaskListNode * curTask;
-//   if (head_ref == nullptr) return;
-
-//   TaskListNode* first = head_ref; // 2 parts. first
-//   TaskListNode* rest = first->next(); // and rest
-//   c += 1;
-//   if (rest == nullptr) { // reached end of list
-//     float ts = first->timeStamp();
-//     string tt = first->taskTitle();
-//     revList = new TaskListNode(ts, tt, nullptr);
-//     mHead = revList;
-//     return;
-//   }  
-
-//   recursiveReverse(rest, c);
-//   curTask = first;
-//   float ts = curTask->timeStamp();
-//   string tt = curTask->taskTitle();
-  
-//   if (first->next() == nullptr) {
-//     revList->setNext(nullptr);
-//     return;
-//   } else {
-//     addTask(ts, tt);
-//     revList = revList->next();
-//     delete first;
-//   }
-
-//   head_ref = rest;
-// }
+void TaskList::recursiveReverse(TaskListNode* head_ref) {
+  if (head_ref == nullptr) return;
+  TaskListNode* rest = (head_ref)->next();
+  if (rest == nullptr) {
+    mHead = head_ref;
+    return;
+  }  
+  recursiveReverse(rest);
+  rest->setNext(head_ref);
+  head_ref->setNext(nullptr);
+ 
+  head_ref = rest;
+}
 
 std::ostream& operator<<(std::ostream& s, const TaskList& aTaskList)
 {
